@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable name="calc" type="com.example.calc.viewmodel.Calculator"/>
+        <import type="com.example.calc.viewmodel.Operation"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="163dp"
+            android:text="@{calc.display}" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:baselineAligned="true">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_weight="0.25">
+
+                    <Button
+                        style="@style/button"
+                        android:id="@+id/button7"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:onClick="@{() -> calc.addDigit(7)}"
+                        android:text="7" />
+
+                    <Button
+                        android:id="@+id/button8"
+                        style="@style/button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:onClick="@{() -> calc.addDigit(8)}"
+                        android:text="8" />
+
+                    <Button
+                        style="@style/button"
+                        android:id="@+id/button9"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:onClick="@{() -> calc.addDigit(9)}"
+                        android:text="9" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.25"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/button4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:onClick="@{() -> calc.addDigit(4)}"
+                        android:text="4" />
+
+                    <Button
+                        android:id="@+id/button5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:onClick="@{() -> calc.addDigit(5)}"
+                        android:text="5" />
+
+                    <Button
+                        android:id="@+id/button6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:onClick="@{() -> calc.addDigit(6)}"
+                        android:text="6" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.25"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/button1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:onClick="@{() -> calc.addDigit(1)}"
+                        android:text="1" />
+
+                    <Button
+                        android:id="@+id/button2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:onClick="@{() -> calc.addDigit(2)}"
+                        android:text="2" />
+
+                    <Button
+                        android:id="@+id/button3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:onClick="@{() -> calc.addDigit(3)}"
+                        android:text="3" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.25"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/buttonPoint"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:onClick="@{() -> calc.addPoint()}"
+                        android:text="." />
+
+                    <Button
+                        android:id="@+id/button0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:onClick="@{() -> calc.addDigit(0)}"
+                        android:text="0" />
+
+                    <Button
+                        android:id="@+id/buttonEqual"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:onClick="@{() -> calc.compute()}"
+                        android:text="=" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <Button
+                    android:id="@+id/buttonDEL"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.2"
+                    android:onClick="@{() -> calc.reset()}"
+                    android:text="DEL" />
+
+                <Button
+                    android:id="@+id/buttonDiv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.2"
+                    android:onClick="@{() -> calc.addOperation(Operation.DIV)}"
+                    android:text="/" />
+
+                <Button
+                    android:id="@+id/buttonMult"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.2"
+                    android:onClick="@{() -> calc.addOperation(Operation.MUL)}"
+                    android:text="x" />
+
+                <Button
+                    android:id="@+id/buttoMin"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.2"
+                    android:onClick="@{() -> calc.addOperation(Operation.SUB)}"
+                    android:text="-" />
+
+                <Button
+                    android:id="@+id/buttonPlus"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.2"
+                    android:onClick="@{() -> calc.addOperation(Operation.ADD)}"
+                    android:text="+" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</layout>
