@@ -5,236 +5,145 @@ import androidx.databinding.ObservableField
 
 class CalculatorRealisation : BaseObservable(), Calculator {
 
-    override var display = ObservableField<String>()
+    override var prevDisplay = ObservableField<String>();
+    override var currDisplay = ObservableField<String>();
 
-    var firstNumber = 0;
-    var secondNumber = 0;
-
-    var numberHavePoint = false;
+    var operation = "";
 
     override fun addDigit(dig: Int)
     {
-        if ("${display.get()}".isEmpty()) {
-            display.set(dig.toString())
+        if ("${currDisplay.get()}".isEmpty()) {
+            currDisplay.set(dig.toString())
             return
         }
-        if ("${display.get()}".last() == '!')
+        if (currDisplay.get() == "Null")
         {
-            display.set(dig.toString())
+            currDisplay.set(dig.toString())
             return
         }
 
-        if (display.get() != null)
+        if (currDisplay.get() != null)
         {
-            val number = display.get() + dig
-            display.set(number)
+            val number = currDisplay.get() + dig
+            currDisplay.set(number)
             return
         }
 
-        display.set(dig.toString())
+        currDisplay.set(dig.toString())
     }
 
     override fun addPoint() {
-        if (display.get() == "" || display.get() == null || numberHavePoint)
+        if ("${currDisplay.get()}".contains("."))
         {
             return
         }
 
-        if ("${display.get()}".last() == '!')
+        if (currDisplay.get() == "" || currDisplay.get() == null || currDisplay.get() == "Null")
         {
-            display.set("")
+            currDisplay.set("0.")
             return
         }
 
-        numberHavePoint = true
-        display.set("${display.get()}.")
+        if ("${currDisplay.get()}".last() == '-')
+        {
+            currDisplay.set("${currDisplay.get()}0.")
+        }
+
+        currDisplay.set("${currDisplay.get()}.")
     }
 
     override fun addOperation(op: Operation) {
-        if ("${display.get()}".isEmpty()) {
-            if (op == Operation.SUB)
-            {
-                display.set("-")
-            }
-            return
-        }
-        if ("${display.get()}".last() == '!')
+        if (currDisplay.get() == "Null")
         {
-            display.set("")
-            if (op == Operation.SUB)
-            {
-                display.set("-")
-            }
-            return
+            currDisplay.set("");
         }
 
-        if (display.get() == "" || display.get() == null)
+        if ("${currDisplay.get()}".isEmpty() || currDisplay.get() == null)
         {
             if (op == Operation.SUB)
             {
-                display.set("-")
+                currDisplay.set("-");
             }
-            return
+            return;
         }
 
-        var operation = ""
-
-        var lastCharacter = "${display.get()}".last()
-
-        when (lastCharacter){
-            '+', '×', '÷', '-' -> display.set("${display.get()}".dropLast(1))
+        if (currDisplay.get() == "-")
+        {
+            return;
         }
 
         when (op){
             Operation.ADD -> operation = "+"
             Operation.SUB -> operation = "-"
-            Operation.MUL -> operation = "×"
-            Operation.DIV -> operation = "÷"
+            Operation.MUL -> operation = "x"
+            Operation.DIV -> operation = "/"
         }
-        numberHavePoint = false
-        println("${display.get()}$operation")
-        display.set("${display.get()}$operation")
+
+        prevDisplay.set(currDisplay.get());
+        currDisplay.set("");
     }
 
     override fun compute() {
-
-        println("${display.get()}")
-
-        if (display.get() == null || display.get() == "") {
-            return
-        }
-
-        if ("${display.get()}".last() == '!')
-        {
-            display.set("")
-            return
-        }
-
-        val lastCharacter= "${display.get()}".last()
-
-        when (lastCharacter){
-            '+', '×', '÷', '-' -> display.set("${display.get()}".dropLast(1))
-        }
-
-        if ("${display.get()}".isEmpty()) {
-            display.set("")
-            return
-        }
-
-        numberHavePoint = false
-
-        try {
-            var result = evaluate("${display.get()}")
-
-            if ((result.toInt() - result) != 0.0)
+        if (currDisplay.get() == null || currDisplay.get() == "") {
+            if (!"${prevDisplay.get()}".isEmpty() || prevDisplay.get() != null)
             {
-                display.set(((result * 100000).toInt() / 100000.0).toString())
-                return
+                currDisplay.set(prevDisplay.get());
+                prevDisplay.set("");
             }
-
-            display.set(result.toInt().toString())
-        } catch (e: Exception) {
-            display.set("Division by zero!")
+            return
         }
-    }
-
-    fun evaluate(str: String): Double {
-        data class Data(val rest: List<Char>, val value: Double)
-
-        return object : Any() {
-
-            fun parse(chars: List<Char>): Double {
-                return getExpression(chars.filter { it != ' ' })
-                    .also { if (it.rest.isNotEmpty()) throw RuntimeException("Unexpected character: ${it.rest.first()}") }
-                    .value
+        else
+        {
+            if ("${prevDisplay.get()}".isEmpty() || prevDisplay.get() == null)
+            {
+                return;
             }
+        }
 
-            private fun getExpression(chars: List<Char>): Data {
-                var (rest, carry) = getTerm(chars)
-                while (true) {
-                    when {
-                        rest.firstOrNull() == '+' -> rest = getTerm(rest.drop(1)).also { carry += it.value }.rest
-                        rest.firstOrNull() == '-' -> rest = getTerm(rest.drop(1)).also { carry -= it.value }.rest
-                        else                      -> return Data(rest, carry)
-                    }
+        if (currDisplay.get() == "Null")
+        {
+            currDisplay.set("")
+            return
+        }
+        var res = 0.0
+        when (operation)
+        {
+            "+" -> res = "${currDisplay.get()}".toDouble() + "${prevDisplay.get()}".toDouble();
+            "-" -> res = "${prevDisplay.get()}".toDouble() - "${currDisplay.get()}".toDouble();
+            "x" -> res = "${currDisplay.get()}".toDouble() * "${prevDisplay.get()}".toDouble();
+            "/" -> {
+                if ("${currDisplay.get()}".toDouble() == 0.0)
+                {
+                    prevDisplay.set("");
+                    currDisplay.set("Null");
+                    return;
                 }
+                res = "${prevDisplay.get()}".toDouble() / "${currDisplay.get()}".toDouble();
             }
-
-            fun getTerm(chars: List<Char>): Data {
-                var (rest, carry) = getFactor(chars)
-                while (true) {
-                    when {
-                        rest.firstOrNull() == '×' -> rest = getTerm(rest.drop(1)).also { carry *= it.value }.rest
-                        rest.firstOrNull() == '÷' ->
-                        {
-                            rest = getTerm(rest.drop(1)).also {
-                                if (it.value == 0.0)
-                                {
-                                    throw Exception("Division by zero!")
-                                }
-                                carry /= it.value
-                            }.rest
-                        }
-                        else                      -> return Data(rest, carry)
-                    }
-                }
-            }
-
-            fun getFactor(chars: List<Char>): Data {
-                return when (val char = chars.firstOrNull()) {
-                    '+'              -> getFactor(chars.drop(1)).let { Data(it.rest, +it.value) }
-                    '-'              -> getFactor(chars.drop(1)).let { Data(it.rest, -it.value) }
-                    '('              -> getParenthesizedExpression(chars.drop(1))
-                    in '0'..'9', ',' -> getNumber(chars)
-                    else             -> throw RuntimeException("Unexpected character: $char")
-                }
-            }
-
-            fun getParenthesizedExpression(chars: List<Char>): Data {
-                return getExpression(chars)
-                    .also { if (it.rest.firstOrNull() != ')') throw RuntimeException("Missing closing parenthesis") }
-                    .let { Data(it.rest.drop(1), it.value) }
-            }
-
-            fun getNumber(chars: List<Char>): Data {
-                val s = chars.takeWhile { it.isDigit() || it == '.' }.joinToString("")
-                return Data(chars.drop(s.length), s.toDouble())
-            }
-
-        }.parse(str.toList())
-
+        }
+        if (res % 10 == 0.0)
+        {
+            currDisplay.set(res.toString().drop(2));
+        }
+        else
+        {
+            currDisplay.set((String.format("%.4f", res)).toString());
+        }
+        prevDisplay.set("");
     }
 
     override fun clear() {
-        if (display.get() == null || display.get() == "") {
+        if (currDisplay.get() == null || currDisplay.get() == "") {
+            prevDisplay.set("");
             return
         }
 
-        if ("${display.get()}".last() == '!')
-        {
-            display.set("")
-            return
-        }
-
-        if ("${display.get()}".last() == '.'){
-            numberHavePoint = false
-        }
-        println("${display.get()}".dropLast(1))
-
-        var text = "${display.get()}".dropLast(1)
-        when (text)
-        {
-            "+", "-", "÷", "×" -> {
-                display.set("")
-                return
-            }
-        }
-
-        display.set("${display.get()}".dropLast(1))
+        currDisplay.set("${currDisplay.get()}".dropLast(1))
     }
 
     override fun reset() {
-        display.set("")
-        numberHavePoint = false
+        currDisplay.set("");
+        prevDisplay.set("");
+        operation = "";
     }
 }

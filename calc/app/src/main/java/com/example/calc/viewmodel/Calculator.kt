@@ -7,8 +7,8 @@ enum class Operation { ADD, SUB, MUL, DIV }
 interface Calculator {
 
     // Observable display, should be referenced in layout
-    var display: ObservableField<String>
-
+    var prevDisplay: ObservableField<String>
+    var currDisplay: ObservableField<String>
 
     // Add new digit to current input and update display
     fun addDigit(dig: Int)
