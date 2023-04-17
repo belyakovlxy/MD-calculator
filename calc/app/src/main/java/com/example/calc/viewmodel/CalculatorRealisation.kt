@@ -121,9 +121,9 @@ class CalculatorRealisation : BaseObservable(), Calculator {
                 res = "${prevDisplay.get()}".toDouble() / "${currDisplay.get()}".toDouble();
             }
         }
-        if (res % 10 == 0.0)
+        if ((res * 10) % 10 == 0.0)
         {
-            currDisplay.set(res.toString().drop(2));
+            currDisplay.set(res.toString().dropLast(2));
         }
         else
         {
